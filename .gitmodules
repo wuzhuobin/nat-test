@@ -1,0 +1,3 @@
+[submodule "Jool"]
+	path = Jool
+	url = https://github.com/NICMx/Jool.git

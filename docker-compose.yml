@@ -1,0 +1,67 @@
+version: "3.9"
+services:
+  gateway:
+    hostname: gateway
+    build:
+      context: .
+      dockerfile: gateway.Dockerfile
+      args:
+        - http_proxy=${http_proxy}
+        - https_proxy=${https_proxy}
+    stdin_open: true
+    networks:
+      - public-gateway-lan
+      - gateway-private-lan
+    privileged: true
+    cap_add:
+      - ALL
+    volumes:
+      - .:$PWD
+
+  public_network_device:
+    hostname: public_network_device
+    build:
+      context: .
+      dockerfile: device.Dockerfile
+    stdin_open: true
+    networks:
+      - public-gateway-lan
+    privileged: true
+    cap_add:
+      - ALL
+    volumes:
+      - .:$PWD
+
+  private_network_device:
+    hostname: private_network_device
+    build:
+      context: .
+      dockerfile: device.Dockerfile
+    stdin_open: true
+    networks:
+      - gateway-private-lan
+    privileged: true
+    cap_add:
+      - ALL
+    volumes:
+      - .:$PWD
+
+networks:
+  public-gateway-lan:
+    driver: bridge
+    enable_ipv6: true
+    ipam:
+      driver: default
+      config:
+        # - subnet: fd00::192.168.0.0/124
+        - subnet: fd00::0000/124
+        - subnet: 192.168.0.0/28
+  gateway-private-lan:
+    driver: bridge
+    enable_ipv6: true
+    ipam:
+      driver: default
+      config:
+        # - subnet: fd00::192.168.1.0/124
+        - subnet: fd00::0010/124
+        - subnet: 192.168.1.0/28
