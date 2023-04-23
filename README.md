@@ -8,6 +8,8 @@
 # Install jool kernel module only
 sudo ./install-jool-kmod.sh
 
+# Install express dependencies
+cd http-server && npm install && cd -
 ```
 
 ### 2. Enable docker compose services

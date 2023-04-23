@@ -16,35 +16,35 @@ services:
     cap_add:
       - ALL
     volumes:
-      - .:$PWD
+      - .:/nat-test
 
   public_network_device:
     hostname: public_network_device
     build:
       context: .
       dockerfile: device.Dockerfile
-    stdin_open: true
+    command: [bash, -c, "cd /nat-test/http-server && npm start"]
     networks:
       - public-gateway-lan
     privileged: true
     cap_add:
       - ALL
     volumes:
-      - .:$PWD
+      - .:/nat-test
 
   private_network_device:
     hostname: private_network_device
     build:
       context: .
       dockerfile: device.Dockerfile
-    stdin_open: true
+    command: [bash, -c, "cd /nat-test/http-server && npm start"]
     networks:
       - gateway-private-lan
     privileged: true
     cap_add:
       - ALL
     volumes:
-      - .:$PWD
+      - .:/nat-test
 
 networks:
   public-gateway-lan:
@@ -53,7 +53,6 @@ networks:
     ipam:
       driver: default
       config:
-        # - subnet: fd00::192.168.0.0/124
         - subnet: fd00::0000/124
         - subnet: 192.168.0.0/28
   gateway-private-lan:
@@ -62,6 +61,5 @@ networks:
     ipam:
       driver: default
       config:
-        # - subnet: fd00::192.168.1.0/124
         - subnet: fd00::0010/124
         - subnet: 192.168.1.0/28
