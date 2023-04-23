@@ -9,14 +9,18 @@ services:
         - http_proxy=${http_proxy}
         - https_proxy=${https_proxy}
     stdin_open: true
-    networks:
-      - public-gateway-lan
-      - gateway-private-lan
     privileged: true
     cap_add:
       - ALL
     volumes:
       - .:/nat-test
+    networks:
+      public-gateway-lan:
+        ipv4_address: 192.168.0.10 # Don't know why 100 don't work
+        ipv6_address: fd00::192.168.1.10
+      gateway-private-lan:
+        ipv4_address: 192.168.2.10
+        ipv6_address: fd00::192.168.3.10
 
   public_network_device:
     hostname: public_network_device
@@ -53,13 +57,13 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: fd00::0000/124
-        - subnet: 192.168.0.0/28
+        - subnet: 192.168.0.0/24
+        - subnet: fd00::192.168.1.0/120
   gateway-private-lan:
     driver: bridge
     enable_ipv6: true
     ipam:
       driver: default
       config:
-        - subnet: fd00::0010/124
-        - subnet: 192.168.1.0/28
+        - subnet: 192.168.2.0/24
+        - subnet: fd00::192.168.3.0/120

@@ -9,6 +9,8 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y \
   iptables \
   iputils-ping \
   iproute2 \
+  curl \
+  avahi-daemon \
   nodejs npm
 
 RUN sysctl -w net.ipv4.conf.all.forwarding=0
