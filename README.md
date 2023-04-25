@@ -1,5 +1,43 @@
 # nat-test
 
+## Introduction
+
+This playground provides an environment with ipv4 and ipv6 nat.
+
+### SIIT(Stateless IP/ICMP Translation)
+
+One to one mapping between IPv4 and IPv6. The device in IPv4 can communicate
+actively with a device in IPv6 with the translated IPv4 address and vice versa.
+
+### Stateful Nat64 (NAPT)
+
+An IPv6 address is mapped to a port of the IPv4 device. Only the device in IPv6
+can communicate with a device in IPv4 but not in the other direction.
+
+```mermaid
+flowchart LR
+  pub([public_network_device])
+  siit_eth0[eth0 \n 192.168.0.10 \n fd00::192.168.1.10]
+  siit_eth1[eth1 \n 192.168.2.10 \n fd00::192.168.3.10]
+  gateway_siit[(gateway_siit \n fd00::/96)]
+  pri([private_network_device])
+  gateway_stateful[(gateway_stateful \n 64:ff9b::/96)]
+  stateful_eth0[eth0]
+  stateful_eth1[eth1]
+  pub -- 192.168.0.0/24 \n fd00::192.168.1.0/120 --- siit_eth0
+  subgraph siit
+    siit_eth0 --- gateway_siit
+    gateway_siit --- siit_eth1
+  end
+  siit_eth1 -- 192.168.2.0/24 \n fd00::192.168.3.0/120 --- pri
+  pub --- stateful_eth0
+  subgraph stateful
+    stateful_eth0 --- gateway_stateful
+    gateway_stateful --- stateful_eth1
+  end
+  stateful_eth1 -- 192.168.4.10 \n fd00::192.168.5.10 --- pri
+```
+
 ## Steps for Creating a playground
 
 ### 1. Install in host
