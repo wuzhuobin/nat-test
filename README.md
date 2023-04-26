@@ -14,28 +14,42 @@ actively with a device in IPv6 with the translated IPv4 address and vice versa.
 An IPv6 address is mapped to a port of the IPv4 device. Only the device in IPv6
 can communicate with a device in IPv4 but not in the other direction.
 
+* SIIT prefix: `fd00::/96`
+* Stateful prefix: `64:ff9b::/96`
+
 ```mermaid
 flowchart LR
   pub([public_network_device])
+  pub_eth0["eth0 \n (fd00::)192.168.0.2 \n (64:ff9b::)192.168.0.2 \n fd00::192.168.1.2"]
   siit_eth0[eth0 \n 192.168.0.10 \n fd00::192.168.1.10]
-  siit_eth1[eth1 \n 192.168.2.10 \n fd00::192.168.3.10]
+  siit_eth1[eth1 \n fd00::192.168.3.10]
   gateway_siit[(gateway_siit \n fd00::/96)]
   pri([private_network_device])
   gateway_stateful[(gateway_stateful \n 64:ff9b::/96)]
-  stateful_eth0[eth0]
-  stateful_eth1[eth1]
-  pub -- 192.168.0.0/24 \n fd00::192.168.1.0/120 --- siit_eth0
+  stateful_eth0[eth0 \n fd00::192.168.1.10]
+  stateful_eth1[eth1 \n fd00::192.168.5.10]
+  pri_eth0[eth0 \n fd00::192.168.3.2]
+  pri_eth1[eth0 \n fd00::192.168.5.2]
+
+  subgraph public
+    pub --- pub_eth0
+  end
+  pub_eth0 -- 192.168.0.0/24 \n fd00::192.168.1.0/120 --- siit_eth0
   subgraph siit
     siit_eth0 --- gateway_siit
     gateway_siit --- siit_eth1
   end
-  siit_eth1 -- 192.168.2.0/24 \n fd00::192.168.3.0/120 --- pri
-  pub --- stateful_eth0
+  pub_eth0 -- 192.168.0.0/24 \n fd00::192.168.1.0/120 --- stateful_eth0
   subgraph stateful
     stateful_eth0 --- gateway_stateful
     gateway_stateful --- stateful_eth1
   end
-  stateful_eth1 -- 192.168.4.10 \n fd00::192.168.5.10 --- pri
+  siit_eth1 -- fd00::192.168.3.0/120 --- pri_eth0
+  stateful_eth1 -- fd00::192.168.5.0/120 --- pri_eth1
+  subgraph private
+    pri_eth0 --- pri
+    pri_eth1 --- pri
+  end
 ```
 
 ## Steps for Creating a playground
@@ -59,8 +73,6 @@ docker compose up -d
 
 ### 3. Setup devices
 ```bash
-docker compose exec public_network_device /nat-test/public_network_device-route.sh
-
 docker compose exec gateway_siit /nat-test/gateway-setup-siit.sh
 
 docker compose exec gateway_stateful /nat-test/gateway-setup-stateful.sh

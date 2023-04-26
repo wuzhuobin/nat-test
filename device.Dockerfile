@@ -12,6 +12,3 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y \
   curl \
   avahi-daemon \
   nodejs npm
-
-RUN sysctl -w net.ipv4.conf.all.forwarding=0
-RUN sysctl -w net.ipv6.conf.all.forwarding=0

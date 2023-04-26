@@ -9,6 +9,7 @@ services:
       args:
         - http_proxy=${http_proxy}
         - https_proxy=${https_proxy}
+    image: gateway
     stdin_open: true
     privileged: true
     cap_add:
@@ -25,12 +26,7 @@ services:
 
   gateway_stateful:
     hostname: gateway_stateful
-    build:
-      context: .
-      dockerfile: gateway.Dockerfile
-      args:
-        - http_proxy=${http_proxy}
-        - https_proxy=${https_proxy}
+    image: gateway
     stdin_open: true
     privileged: true
     cap_add:
@@ -48,6 +44,10 @@ services:
     build:
       context: .
       dockerfile: device.Dockerfile
+      args:
+        - http_proxy=${http_proxy}
+        - https_proxy=${https_proxy}
+    image: device
     command: [bash, -c, "cd /nat-test/http-server && npm start"]
     networks:
       public_gateway_lan:
@@ -59,9 +59,7 @@ services:
 
   private_network_device:
     hostname: private_network_device
-    build:
-      context: .
-      dockerfile: device.Dockerfile
+    image: device
     command: [bash, -c, "cd /nat-test/http-server && npm start"]
     networks:
       gateway_private_lan_siit:
