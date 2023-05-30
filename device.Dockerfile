@@ -11,4 +11,6 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y \
   iproute2 \
   curl \
   avahi-daemon \
-  nodejs npm
+  nodejs npm \
+  netcat \
+  tcpdump

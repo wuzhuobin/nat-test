@@ -10,6 +10,8 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y \
   iproute2 \
   curl \
   avahi-daemon \
+  netcat \
+  tcpdump \
   build-essential \
   pkg-config \
   libnl-genl-3-dev \
