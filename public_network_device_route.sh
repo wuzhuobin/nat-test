@@ -6,3 +6,5 @@
 # So the public_network_device should know the gateway_siit's ip address and the
 # target network.
 ip route add 192.168.3.0/24 via 192.168.0.10
+
+ip route add 169.254.0.0/16 via 192.168.0.30

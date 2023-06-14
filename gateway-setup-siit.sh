@@ -10,6 +10,7 @@ sysctl -w net.ipv4.icmp_echo_ignore_broadcasts=0
 sysctl -w net.ipv4.conf.all.bc_forwarding=1
 sysctl -w net.ipv4.conf.eth0.bc_forwarding=1
 sysctl -w net.ipv4.conf.eth1.bc_forwarding=1
+sysctl -w net.ipv4.conf.eth2.bc_forwarding=1
 
 # setup the siit nat64 prefix for mapping IPv4 and IPv6 addresses.
 # This should be a common knowledge for all devices in the system.

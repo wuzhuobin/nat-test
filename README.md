@@ -26,10 +26,14 @@ flowchart LR
   gateway_siit[(gateway_siit \n fd00::/96)]
   pri([private_network_device])
   gateway_stateful[(gateway_stateful \n 64:ff9b::/96)]
-  stateful_eth0[eth0 \n fd00::192.168.1.10]
+  stateful_eth0[eth0 \n 192.168.0.20 \n fd00::192.168.1.20]
   stateful_eth1[eth1 \n fd00::192.168.5.10]
+  gateway_link_local[(gateway_link_local \n 169.254.0.0/16)]
+  link_local_eth0[eth0 \n 192.168.0.30]
+  link_local_eth1[eth1 \n 169.254.0.10]
   pri_eth0[eth0 \n fd00::192.168.3.2]
-  pri_eth1[eth0 \n fd00::192.168.5.2]
+  pri_eth1[eth1 \n fd00::192.168.5.2]
+  pri_eth2[eth2 \n 169.254.0.2]
 
   subgraph public
     pub --- pub_eth0
@@ -44,11 +48,18 @@ flowchart LR
     stateful_eth0 --- gateway_stateful
     gateway_stateful --- stateful_eth1
   end
+  pub_eth0 -- 192.168.0.0/24 --- link_local_eth0
+  subgraph link_local
+    link_local_eth0 --- gateway_link_local
+    gateway_link_local --- link_local_eth1
+  end
   siit_eth1 -- fd00::192.168.3.0/120 --- pri_eth0
   stateful_eth1 -- fd00::192.168.5.0/120 --- pri_eth1
+  link_local_eth1 -- 169.254.0.0/16 --- pri_eth2
   subgraph private
     pri_eth0 --- pri
     pri_eth1 --- pri
+    pri_eth2 --- pri
   end
 ```
 
@@ -90,6 +101,8 @@ docker compose exec -it gateway_siit bash
 
 docker compose exec -it gateway_stateful bash
 
+docker compose exec -it gateway_link_local bash
+
 docker compose exec -it private_network_device bash
 
 # siit
@@ -97,6 +110,10 @@ ping fd00::192.168.0.2
 
 # stateful
 ping 64:ff9b::192.168.0.2
+
+# link local
+ping 169.254.0.2
+ping -b 169.254.255.255
 ```
 
 

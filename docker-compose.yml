@@ -35,9 +35,26 @@ services:
       - .:/nat-test
     networks:
       public_gateway_lan:
+        ipv4_address: 192.168.0.20 # Don't know why 100 don't work
+        ipv6_address: fd00::192.168.1.20
       gateway_private_lan_stateful:
         ipv4_address: 192.168.4.10
         ipv6_address: fd00::192.168.5.10
+  
+  gateway_link_local:
+    hostname: gateway_link_local
+    image: gateway
+    stdin_open: true
+    privileged: true
+    cap_add:
+      - ALL
+    volumes:
+      - .:/nat-test
+    networks:
+      public_gateway_lan:
+        ipv4_address: 192.168.0.30 # Don't know why 100 don't work
+      gateway_private_lan_link_local:
+        ipv4_address: 169.254.0.10
 
   public_network_device:
     hostname: public_network_device
@@ -51,6 +68,8 @@ services:
     command: [bash, -c, "cd /nat-test/http-server && npm start"]
     networks:
       public_gateway_lan:
+        ipv4_address: 192.168.0.2
+        ipv6_address: fd00::192.168.1.2
     privileged: true
     cap_add:
       - ALL
@@ -63,7 +82,13 @@ services:
     command: [bash, -c, "cd /nat-test/http-server && npm start"]
     networks:
       gateway_private_lan_siit:
+        ipv4_address: 192.168.2.2
+        ipv6_address: fd00::192.168.3.2
       gateway_private_lan_stateful:
+        ipv4_address: 192.168.4.2
+        ipv6_address: fd00::192.168.5.2
+      gateway_private_lan_link_local:
+        ipv4_address: 169.254.0.2
     privileged: true
     cap_add:
       - ALL
@@ -97,3 +122,11 @@ networks:
       config:
         - subnet: 192.168.4.0/24
         - subnet: fd00::192.168.5.0/120
+  
+  gateway_private_lan_link_local:
+    driver: bridge
+    enable_ipv6: false
+    ipam:
+      driver: default
+      config:
+        - subnet: 169.254.0.0/16
