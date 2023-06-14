@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# enable ping broadcast response
+sysctl -w net.ipv4.icmp_echo_ignore_broadcasts=0
+
 # Add a new route for routing to the private_network_device.
 # 192.168.0.10 is a IPv4 address of the gateway_siit's ethernet interface.
 # 192.168.3.0/24 is the network where the private_network_device is.

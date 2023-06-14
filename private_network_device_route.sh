@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# enable ping broadcast response
+sysctl -w net.ipv4.icmp_echo_ignore_broadcasts=0
+
 # Add a new route for routing to the public_network_device.
 # fd00::192.168.3.10 is a IPv6 address of the gateway_siit's ethernet interface.
 # fd00::192.168.0.0/120 is the network where the public_network_device is.
